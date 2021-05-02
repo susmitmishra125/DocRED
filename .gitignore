@@ -1,3 +1,4 @@
-checkpoint/
+/checkpoint
 Notebook.ipynb
-prepro_data/
+/prepro_data
+/.ipynb_checkpoints
