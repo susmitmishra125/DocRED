@@ -18,7 +18,9 @@ case_sensitive = False
 char_limit = 16
 sent_limit = 25
 word_size = 100
-train_distant_file_name = os.path.join(in_path, 'train_distant.json')
+PAD='PAD'
+
+# train_distant_file_name = os.path.join(in_path, 'train_distant.json')
 train_annotated_file_name = os.path.join(in_path, 'train_annotated.json')
 dev_file_name = os.path.join(in_path, 'dev.json')
 test_file_name = os.path.join(in_path, 'test.json')
@@ -213,10 +215,25 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
 
 
 
-init(train_distant_file_name, rel2id, max_length = 512, is_training = True, suffix='')
-init(train_annotated_file_name, rel2id, max_length = 512, is_training = False, suffix='_train')
-init(dev_file_name, rel2id, max_length = 512, is_training = False, suffix='_dev')
-init(test_file_name, rel2id, max_length = 512, is_training = False, suffix='_test')
+# init(train_distant_file_name, rel2id, max_length = 512, is_training = True, suffix='')
+# init(train_annotated_file_name, rel2id, max_length = 512, is_training = False, suffix='_train')
+# init(dev_file_name, rel2id, max_length = 512, is_training = False, suffix='_dev')
+# init(test_file_name, rel2id, max_length = 512, is_training = False, suffix='_test')
+def preprocess(data_file_name,max_length=512,is_training=True,suffix=''):
+    ori_data = json.load(open(data_file_name))[0:50]
+    sent_ids=[]
+    for x in ori_data:
+        for sent in x['sents']:
+            sent=['CLS']+sent
+            sent+=['PAD']*(max_len-len(sent))
+            # sent[-1]='SEP'
+            sent=bert.convert_token_to_ids(bert.tokenize(sent))
+            sent_ids.append(sent)
+    bert_token = np.asarray(send_ids,dtype = np.int64)
+    np.save(os.path.join(out_path,name_prefix_suffix+'bert_token.npy'),bert_token)
+
+preprocess(train_annotated_file_name,max_length=512,is_training=True,suffix='_train')
+
 
 
 
