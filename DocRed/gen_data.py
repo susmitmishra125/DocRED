@@ -18,7 +18,6 @@ case_sensitive = False
 char_limit = 16
 sent_limit = 25
 word_size = 100
-PAD='PAD'
 
 # train_distant_file_name = os.path.join(in_path, 'train_distant.json')
 train_annotated_file_name = os.path.join(in_path, 'train_annotated.json')
@@ -175,7 +174,6 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
         words = []
         for sent in item['sents']:
             words += sent
-            words[-1] = "[CLS]"
 
         bert_token[i], bert_mask[i], bert_starts[i] = bert.subword_tokenize_to_ids(words)
 	
@@ -220,20 +218,29 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
 # init(dev_file_name, rel2id, max_length = 512, is_training = False, suffix='_dev')
 # init(test_file_name, rel2id, max_length = 512, is_training = False, suffix='_test')
 def preprocess(data_file_name,max_length=512,is_training=True,suffix=''):
-    ori_data = json.load(open(data_file_name))[0:50]
+    ori_data = json.load(open(data_file_name))
     sent_ids=[]
     for x in ori_data:
         for sent in x['sents']:
-            sent=['CLS']+sent
-            sent+=['PAD']*(max_len-len(sent))
-            # sent[-1]='SEP'
-            sent=bert.convert_token_to_ids(bert.tokenize(sent))
+            sent,_,_=bert.subword_tokenize_to_ids(sent)
+            sent=np.reshape(sent,(max_length))
             sent_ids.append(sent)
-    bert_token = np.asarray(send_ids,dtype = np.int64)
-    np.save(os.path.join(out_path,name_prefix_suffix+'bert_token.npy'),bert_token)
+
+    bert_token = np.asarray(sent_ids,dtype = np.int64)
+    label=np.zeros(bert_token.shape[0])
+    s=0
+    for i in range(len(ori_data)):
+        for j in range(len(ori_data[i]['labels'])):
+            for x in ori_data[i]['labels'][j]['evidence']:
+                label[x+s]=1
+        s+=len(ori_data[i]['sents'])
+    print("Total sentences = ",s)
+    print("Saving files")
+    np.save(os.path.join(out_path,suffix+'bert_token.npy'),bert_token)
+    np.save(os.path.join(out_path,suffix+'label.npy'),label)
+    print("Saving files compelted")
+    
+    
 
 preprocess(train_annotated_file_name,max_length=512,is_training=True,suffix='_train')
-
-
-
-
+preprocess(dev_file_name,max_length=512,is_training=False,suffix='_dev')
