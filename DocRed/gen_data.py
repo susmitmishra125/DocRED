@@ -164,7 +164,7 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
     sen_pos = np.zeros((sen_tot, max_length), dtype = np.int64)
     sen_ner = np.zeros((sen_tot, max_length), dtype = np.int64)
     sen_char = np.zeros((sen_tot, max_length, char_limit), dtype = np.int64)
-    bert_token = np.zeros((sen_tot, max_length), dtype = np.int64)
+    bert_ids = np.zeros((sen_tot, max_length), dtype = np.int64)
     bert_mask = np.zeros((sen_tot, max_length), dtype = np.int64)
     bert_starts = np.zeros((sen_tot, max_length), dtype = np.int64)
 
@@ -175,7 +175,7 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
         for sent in item['sents']:
             words += sent
 
-        bert_token[i], bert_mask[i], bert_starts[i] = bert.subword_tokenize_to_ids(words)
+        bert_ids[i], bert_mask[i], bert_starts[i] = bert.subword_tokenize_to_ids(words)
 	
         for j, word in enumerate(words):
             word = word.lower()
@@ -206,7 +206,7 @@ def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''
     np.save(os.path.join(out_path, name_prefix + suffix + '_pos.npy'), sen_pos)
     np.save(os.path.join(out_path, name_prefix + suffix + '_ner.npy'), sen_ner)
     np.save(os.path.join(out_path, name_prefix + suffix + '_char.npy'), sen_char)
-    np.save(os.path.join(out_path, name_prefix + suffix + '_bert_word.npy'), bert_token)
+    np.save(os.path.join(out_path, name_prefix + suffix + '_bert_word.npy'), bert_ids)
     np.save(os.path.join(out_path, name_prefix + suffix + '_bert_mask.npy'), bert_mask)
     np.save(os.path.join(out_path, name_prefix + suffix + '_bert_starts.npy'), bert_starts)
     print("Finish saving")
@@ -226,8 +226,8 @@ def preprocess(data_file_name,max_length=512,is_training=True,suffix=''):
             sent=np.reshape(sent,(max_length))
             sent_ids.append(sent)
 
-    bert_token = np.asarray(sent_ids,dtype = np.int64)
-    label=np.zeros(bert_token.shape[0])
+    bert_ids = np.asarray(sent_ids,dtype = np.int64)
+    label=np.zeros(bert_ids.shape[0])
     s=0
     for i in range(len(ori_data)):
         for j in range(len(ori_data[i]['labels'])):
@@ -236,7 +236,7 @@ def preprocess(data_file_name,max_length=512,is_training=True,suffix=''):
         s+=len(ori_data[i]['sents'])
     print("Total sentences = ",s)
     print("Saving files")
-    np.save(os.path.join(out_path,'bert_token'+suffix+'.npy'),bert_token)
+    np.save(os.path.join(out_path,'bert_ids'+suffix+'.npy'),bert_ids)
     np.save(os.path.join(out_path,'label'+suffix+'.npy'),label)
     print("Saving files compelted")
     
