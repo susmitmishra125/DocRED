@@ -236,8 +236,8 @@ def preprocess(data_file_name,max_length=512,is_training=True,suffix=''):
         s+=len(ori_data[i]['sents'])
     print("Total sentences = ",s)
     print("Saving files")
-    np.save(os.path.join(out_path,suffix+'bert_token.npy'),bert_token)
-    np.save(os.path.join(out_path,suffix+'label.npy'),label)
+    np.save(os.path.join(out_path,'bert_token'+suffix+'.npy'),bert_token)
+    np.save(os.path.join(out_path,'label'+suffix+'.npy'),label)
     print("Saving files compelted")
     
     
