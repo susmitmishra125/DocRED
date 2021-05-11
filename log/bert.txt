@@ -1,0 +1,51 @@
+Started saving
+Number of instances: 
+Started saving
+Number of instances: 1
+Started saving
+Number of instances: 18
+Started saving
+Number of instances: 18
+Started saving
+Started saving
+Started saving
+Number of instances: (18, 512)
+Started saving
+Number of instances: (18, 512)
+Started saving
+Number of instances: (18, 512)
+Started saving
+Number of instances: 18
+Started saving
+Number of instances: 18
+Started saving
+Number of instances: 13
+Started saving
+Number of instances: 18
+Started saving
+Number of instances: 38180
+Started saving
+Number of instances: 120
+completed saving
+Started saving
+Number of instances: 120
+completed saving
+Started saving
+Number of instances: 120
+completed saving
+
+Started saving
+Number of instances: 120
+completed saving
+
+Started saving
+Number of instances: 120
+completed saving
+
+Started saving
+Number of instances: 120
+completed saving
+
+Started saving
+Number of instances: 169
+completed saving
