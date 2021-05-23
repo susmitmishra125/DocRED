@@ -8,7 +8,7 @@ import copy
 import random
 import time
 import datetime
-os.chdir("/home/mtech1/19CS60R28/susmit/DocRed_hongwang600/DocRed")
+# os.chdir("/home/mtech1/19CS60R28/susmit/DocRed_hongwang600/DocRed")
 
 from nltk.tokenize import WordPunctTokenizer
 from pytorch_transformers import *
@@ -17,17 +17,19 @@ from torch.utils.data import Dataset, DataLoader
 from torch import nn, optim
 import torch.nn.functional as F
 from tqdm import tqdm
-from models.bert import Bert
+sys.path.append("/home/mtech1/19CS60R28/susmit/DocRed_hongwang600/DocRed/models")
+from bert import Bert
 
-os.chdir("/home/mtech1/19CS60R28/susmit/DocRed_hongwang600")
+# os.chdir("/home/mtech1/19CS60R28/susmit/DocRed_hongwang600")
 RANDOM_SEED = 42
 in_path='data'
 out_path='prepro_data'
 os.environ['CUDA_VISIBLE_DEVICES']="0,1"
 PRE_TRAINED_MODEL_NAME='bert-base-uncased'
 model_name='bert'
-BATCH_SIZE=4
+BATCH_SIZE=8
 EPOCH = 10
+update_freq = 4
 
 n_gpu = torch.cuda.device_count()
 if not os.path.exists(out_path):
@@ -109,13 +111,13 @@ def preprocess(data_file_name, max_length = 512, is_training = True, suffix=''):
             for entity in head:
                 if (entity['sent_id'],entity['pos'][0],'[unused0]') not in idx_list:
                     idx_list.append((entity['sent_id'],entity['pos'][0],'[unused0]'))
-                if (entity['sent_id'],entity['pos'][1]+1,'[unused1]') not in idx_list:
-                    idx_list.append((entity['sent_id'],entity['pos'][1]+1,'[unused1]'))
+                if (entity['sent_id'],entity['pos'][1],'[unused1]') not in idx_list:
+                    idx_list.append((entity['sent_id'],entity['pos'][1],'[unused1]'))
             for entity in tail:
                 if (entity['sent_id'],entity['pos'][0],'[unused2]') not in idx_list:
                     idx_list.append((entity['sent_id'],entity['pos'][0],'[unused2]'))
-                if (entity['sent_id'],entity['pos'][1]+1,'[unused3]') not in idx_list:
-                    idx_list.append((entity['sent_id'],entity['pos'][1]+1,'[unused3]'))
+                if (entity['sent_id'],entity['pos'][1],'[unused3]') not in idx_list:
+                    idx_list.append((entity['sent_id'],entity['pos'][1],'[unused3]'))
             idx_list.sort(key=lambda tup:(tup[0],tup[1]),reverse=True)
             temp_doc=copy.deepcopy(doc)
             for loc in idx_list:
@@ -262,9 +264,18 @@ def train(input_ids,sent_attention,sent_mask,evi_target):
             outputs = model(batch_sent_ids,batch_sent_ids,batch_sent_mask,is_training=True)
             loss = criterion(outputs.reshape((outputs.shape[0]*outputs.shape[1],outputs.shape[2])),batch_evi_targets.reshape((batch_evi_targets.shape[0]*batch_evi_targets.shape[1])))
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
+            if (i + 1) % update_freq == 0:
+                optimizer.step()
+                model.zero_grad()
             train_loss_val+=loss.item()
         train_loss_val/=batch_count
         end_time = datetime.datetime.now()
         logging('Training_loss: ',train_loss_val)
         logging('Time: ',end_time-start_time)
     logging("*"*50)
+
+train(input_ids=sent_ids,sent_attention=sent_attention,sent_mask = sent_mask, evi_target = evi_target)
+
+
+def predict()
