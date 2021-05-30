@@ -100,10 +100,6 @@ def preprocess(data_file_name, max_length = 512, is_training = True, suffix=''):
     """
     ori_data=json.load(open(data_file_name))[0:10]
     max_sent_count=0#maximum number of sentences in a doc across the dataset
-    # list_sent_ids=[]
-    # list_attention=[]#this stores attention of docs
-    # list_sent_mask=[]#this will be used in the batch multliplication for getting the embeddings of each sentence
-    # (len(list_sent_ids),max_sent_count,max_length)
     input_sent = []
     labels=[]
     i=0
@@ -137,42 +133,8 @@ def preprocess(data_file_name, max_length = 512, is_training = True, suffix=''):
             for loc in idx_list:
                 temp_doc['sents'][loc[0]].insert(loc[1],loc[2])
 
-            # sent_combine=[]
-            # for sent in temp_doc['sents']:
-            #     sent_combine=sent_combine+sent
-            # sent_ids,sent_attention_mask,sent_start_ids=bert.subword_tokenize_to_ids(sent_combine)
-            # list_sent_ids.append(sent_ids[0])
-            # list_attention.append(sent_attention_mask[0])
             input_sent.append(temp_doc['sents'])
             labels.append(label['evidence'])
-            
-            
-            # sent_mask=[]
-            # l=1# we start from index 1 because we skip CLS token
-            # for sent in temp_doc['sents']:
-                # sent_mask.append([0]*max_length)
-                # j=l
-                # while(j<min(max_length-2,l+len(sent))):
-                    # sent_mask[-1][j]=1
-                    # j+=1
-                # l+=len(sent)
-                # if(l>=max_length-2):
-                    # break
-            # list_sent_mask.append(sent_mask)
-            
-    # logging('')
-    # evi_labels = np.zeros((len(labels),max_sent_count),dtype = np.int64)
-    # for i in range(len(labels)):
-    #     evi_labels[i][labels[i]]=1 #if evidence present then 1
-    # logging("max_sent_cout",max_sent_count)
-    # for i in range(len(list_sent_mask)):
-    #     # the label for pad sentence is 2
-    #     evi_labels[i][len(list_sent_mask[i]):max_sent_count]=2
-    #     # to pad sentences with arrays of 1s
-    #     list_sent_mask[i]=list_sent_mask[i]+[[1]*max_length]*(max_sent_count-len(list_sent_mask[i]))
-    # list_sent_ids=np.asarray(list_sent_ids,dtype=np.int64)
-    # list_attention=np.asarray(list_attention,dtype=np.int64)
-    # list_sent_mask=np.asarray(list_sent_mask,dtype=np.int64)
     data={}
     data['input_sent']=input_sent
     data['labels']=labels
@@ -181,11 +143,6 @@ def preprocess(data_file_name, max_length = 512, is_training = True, suffix=''):
     out_file = open(os.path.join(out_path,suffix+'_data.json'),"w")
     json.dump(data,out_file,indent=2)
     out_file.close()
-    
-    # np.save(os.path.join(out_path,suffix+'_sent_ids.npy'),list_sent_ids)
-    # np.save(os.path.join(out_path,suffix+'_sent_attention.npy'),list_attention)
-    # np.save(os.path.join(out_path,suffix+'_sent_mask.npy'),list_sent_mask)
-    # np.save(os.path.join(out_path,suffix+'_evidence_labels.npy'),evi_labels)
     logging("completed saving\n")
 
 preprocess(train_annotated_file_name, max_length = 512, is_training = False, suffix='train')
