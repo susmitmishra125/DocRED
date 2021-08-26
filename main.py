@@ -385,8 +385,6 @@ def predict(data,model,threshold=0.5,save_output=False,save_suffix='_output'):
 						outputs = model(batch_sent_ids,batch_sent_attention,batch_sent_mask,is_training=False)
 						if save_output:
 							output_list=output_list+outputs.tolist()
-				if batch_idx>800:
-					print('outputs:',outputs.shape)
 				for i in range(outputs.shape[0]):
 						for j in range(outputs.shape[1]):
 								if(batch_evi_targets[i][j]==2):
