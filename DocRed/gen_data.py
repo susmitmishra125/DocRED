@@ -43,7 +43,7 @@ def sents_2_idx(sents, word2id):
 
 def init(data_file_name, rel2id, max_length = 512, is_training = True, suffix=''):
 
-    ori_data = json.load(open(data_file_name))[0:50]
+    ori_data = json.load(open(data_file_name))
 
     Ma = 0
     Ma_e = 0

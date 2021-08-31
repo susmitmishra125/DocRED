@@ -203,6 +203,158 @@ def get_batch_data(cur_samples_doc,cur_samples_evi = None):
 				'targets':evi_target,
 		}
 
+def gen_data(ori_data,is_training,filename,model_file):
+	doc_index=0
+	if is_training:
+		modified_list = []
+		for doc in ori_data:
+			doc_index=doc_index+1
+			sys.stdout.write("\r%d/%d docs"%(doc_index,len(ori_data)))
+
+			label_list=[]
+			sent_numpy = np.array(doc['sents'],dtype=object)
+			for labels in doc['labels']:
+				label_list.append((labels['h'],labels['t']))
+				temp_doc={}
+				temp_doc['labels']=[]
+				temp_doc['title']=doc['title']
+				temp_doc['vertexSet']=[doc['vertexSet'][labels['h']],doc['vertexSet'][labels['t']]]
+
+				temp_label={}
+				temp_label['r']=labels['r']
+				temp_label['h']=0
+				temp_label['t']=1
+				temp_label['evidence']=labels['evidence']
+
+				for i in range(2):
+					for j in range(len(temp_doc['vertexSet'][i])):
+						if temp_doc['vertexSet'][i][j]['sent_id'] not in temp_label['evidence']:
+							temp_label['evidence'].append(temp_doc['vertexSet'][i][j]['sent_id']) # adding the sentences which contains the entity
+				temp_label['evidence'].sort()
+				temp_doc['sents']=sent_numpy[labels['evidence']].tolist()
+				for i in range(2):
+					for j in range(len(temp_doc['vertexSet'][i])):
+						temp_doc['vertexSet'][i][j]['sent_id'] = temp_label['evidence'].index(temp_doc['vertexSet'][i][j]['sent_id'])
+				temp_doc['labels'].append(copy.deepcopy(temp_label))
+				temp_doc['rel']=1
+				modified_list.append(copy.deepcopy(temp_doc))
+			
+			label_set=set(label_list)
+			# to add nan relations
+			for i in range(len(doc['vertexSet'])):
+				for j in range(len(doc['vertexSet'])):
+					if i!=j and (i,j) not in label_set:
+						temp_doc={}
+						temp_doc['sents']=doc['sents']
+						temp_doc['labels']=[]
+						temp_doc['title']=doc['title']
+						temp_doc['vertexSet']=[doc['vertexSet'][i],doc['vertexSet'][j]]
+						temp_doc['rel']=0
+						modified_list.append(copy.deepcopy(temp_doc))
+		logging('\nstarted saving '+filename)
+		out_file = open(os.path.join(out_path,filename+'.json'),"w")
+		json.dump(modified_list,out_file,indent=2)
+		out_file.close()
+		logging('completed saving '+filename)
+	else:
+		model = EvidenceClassifier()
+		
+		if torch.cuda.is_available():
+				model.cuda()
+				model = nn.DataParallel(model)
+		model.load_state_dict(torch.load(model_file))
+		modified_list=[]
+		doc_index=0
+		for doc in ori_data:
+			doc_index=doc_index+1
+			sys.stdout.write("\r%d/%d docs"%(doc_index,len(ori_data)))
+			label_list=[]
+			for i in range(len(doc['labels'])):
+				modified_list.append(evd_sent(doc,i,model,threshold = 0.3))
+				label_list.append((doc['labels'][i]['h'],doc['labels'][i]['t']))
+			label_set=set(label_list)
+			for i in range(len(doc['vertexSet'])):
+				for j in range(len(doc['vertexSet'])):
+					if i!=j and (i,j) not in label_set:
+						temp_doc={}
+						temp_doc['sents']=doc['sents']
+						temp_doc['title']=doc['title']
+						temp_doc['labels']=[]
+						temp_doc['vertexSet']=[doc['vertexSet'][i],doc['vertexSet'][j]]
+						temp_doc['rel']=0
+						modified_list.append(copy.deepcopy(temp_doc))
+		
+		logging('\nstarted saving '+filename)
+		out_file = open(os.path.join(out_path,filename+'.json'),"w")
+		json.dump(modified_list,out_file,indent=2)
+		out_file.close()
+		logging('completed saving '+filename)
+
+def evd_sent(doc,label_index,model,threshold=0.5):
+	"""
+	doc is the dict for a document
+	label_index is the index of the label to be processed
+	returns doc of same format for the input doc and relation with only evidence sentences
+	"""
+	label = doc['labels'][label_index]
+	head=doc['vertexSet'][label['h']]
+	tail=doc['vertexSet'][label['t']]
+
+
+	input_sent = []
+	labels = []
+	idx_list = []
+	for entity in head:
+		if (entity['sent_id'],entity['pos'][0],'[unused0]') not in idx_list:
+			idx_list.append((entity['sent_id'],entity['pos'][0],'[unused0]'))
+		if (entity['sent_id'],entity['pos'][1],'[unused1]') not in idx_list:
+			idx_list.append((entity['sent_id'],entity['pos'][1],'[unused1]'))
+	for entity in tail:
+		if (entity['sent_id'],entity['pos'][0],'[unused2]') not in idx_list:
+			idx_list.append((entity['sent_id'],entity['pos'][0],'[unused2]'))
+		if (entity['sent_id'],entity['pos'][1],'[unused3]') not in idx_list:
+			idx_list.append((entity['sent_id'],entity['pos'][1],'[unused3]'))
+	idx_list.sort(key=lambda tup:(tup[0],tup[1]),reverse=True)
+	temp_doc=copy.deepcopy(doc)
+	for loc in idx_list:
+		temp_doc['sents'][loc[0]].insert(loc[1],loc[2])
+
+	input_sent.append(copy.deepcopy(temp_doc['sents']))
+	labels.append(copy.deepcopy(label['evidence']))
+
+	data={}
+	data['input_sent']=input_sent
+	data['labels']=labels
+
+	# model loading
+
+	evd_output = predict(data = data,model = model,threshold = 0.3,return_output=True).cpu()
+	model.eval()
+
+	sent_numpy = np.array(doc['sents'],dtype=object)
+	temp_doc={}
+	temp_doc['vertexSet']=[doc['vertexSet'][label['h']],doc['vertexSet'][label['t']]]
+	for i in range(2):
+		for j in range(len(temp_doc['vertexSet'][i])):
+			evd_output[0][temp_doc['vertexSet'][i][j]['sent_id']] = 1 # including the sentences which contain the entity
+	pred_evd = np.where(evd_output[0]>=threshold)[0]
+
+	for i in range(2):
+		for j in range(len(temp_doc['vertexSet'][i])):
+			temp_doc['vertexSet'][i][j]['sent_id'] = int(np.where(pred_evd == temp_doc['vertexSet'][i][j]['sent_id'])[0][0])
+	temp_doc['sents'] = sent_numpy[pred_evd].tolist()
+	temp_doc['title'] = doc['title']
+	temp_doc['labels'] = []
+	temp_label = {}
+	temp_label['r'] = label['r']
+	temp_label['h'] = 0
+	temp_label['t'] = 1
+	temp_label['evidence']=label['evidence']
+	temp_doc['labels'].append(temp_label)
+	temp_doc['rel']=1
+
+	return temp_doc
+
 class EvidenceClassifier(nn.Module):
 		def __init__(self):
 				super(EvidenceClassifier, self).__init__()
@@ -350,13 +502,13 @@ def test(test_data,model_file,threshold = 0.5,save_output=False,save_suffix='_ou
 		#     logging('Test F1:',round(F1,3))
 		#     print('\n\n')
 
-def predict(data,model,threshold=0.5,save_output=False,save_suffix='_output'):
+def predict(data,model,threshold=0.5,save_output=False,save_suffix='_output', return_output = False):
 		dev_input_ids = data['input_sent']
 		dev_target =data['labels'] 
 		dev_size=len(dev_input_ids)
 		batch_size=BATCH_SIZE_PRED
 		batch_count=int(math.ceil(dev_size/batch_size))
-		logging("Evidence Threshold:",threshold)
+		# logging("Evidence Threshold:",threshold)
 		model.eval()
 		set_random_seeds(RANDOM_SEED)
 		
@@ -366,7 +518,8 @@ def predict(data,model,threshold=0.5,save_output=False,save_suffix='_output'):
 		true_negative = 0
 
 		output_list=[]
-		for batch_idx in tqdm(range(0,batch_count)):
+		# for batch_idx in tqdm(range(0,batch_count)):
+		for batch_idx in (range(0,batch_count)):
 				batch_start = batch_idx * batch_size
 				batch_end = min(dev_size,batch_start+batch_size)
 				data = get_batch_data(dev_input_ids[batch_start:batch_end], dev_target[batch_start:batch_end])
@@ -401,25 +554,27 @@ def predict(data,model,threshold=0.5,save_output=False,save_suffix='_output'):
 		# logging('false_positive',false_positive)
 		# logging('false_negative',false_negative)
 		# logging('true_negative',true_negative)
-		logging('gt_pos',true_positive+false_negative)
-		logging('pred_pos',true_positive+false_positive)
-		logging('correct_pos',true_positive)
+		# logging('gt_pos',true_positive+false_negative)
+		# logging('pred_pos',true_positive+false_positive)
+		# logging('correct_pos',true_positive)
 		preciscion = true_positive/(true_positive+false_positive+1e-05)
 		recall = true_positive/(true_positive+false_negative+1e-05)
-		logging('recall',round(recall,3))
-		logging('prec',round(preciscion,3))
+		# logging('recall',round(recall,3))
+		# logging('prec',round(preciscion,3))
 		F1 = 2*recall*preciscion/(preciscion+recall+1e-05)
-		logging('F1',round(F1,3))
+		# logging('F1',round(F1,3))
 		acc = true_positive+true_negative
 
 
 		if save_output:
 			json.dump(output_list,open(os.path.join(out_path,save_suffix+'.json'),'w'),indent=2)
 		model.train()
+		if return_output:
+			return outputs
 		return acc,F1
 
 if __name__ == "__main__":
-		job_mode = 'test'
+		job_mode = 'gen_data'
 		do_preprocessing = True
 		RANDOM_SEED = 42
 		set_random_seeds(RANDOM_SEED)
@@ -450,16 +605,13 @@ if __name__ == "__main__":
 		dev_file_name = os.path.join(in_path, 'dev.json') # dev but this will be used for testing purposes
 		# test_file_name = os.path.join(in_path, 'test.json') # not used because labels are not available
 		# preprocessing
-		train_data = json.load(open(train_annotated_file_name))[:100]
+		train_data = json.load(open(train_annotated_file_name))[:30]
 		train_size = len(train_data)
-		dev_data = train_data[:train_size//10] # choosing 10% of train data into dev data
+		dev_data = train_data[:train_size//10] # choosing 10% of train data into dev 
 		train_data = train_data[train_size//10:]
-		test_data = json.load(open(dev_file_name))[:100]
+		test_data = json.load(open(dev_file_name))[:30]
 
 
-		modified_dev_data = json.load(open(os.path.join(out_path,'dev_dataset_modified_without_evidence.json'),'r'))
-		print(len(modified_dev_data))
-		modified_test_data = json.load(open(os.path.join(out_path,'test_dataset_modified_without_evidence.json'),'r'))
 		logging('Train size:',len(train_data))
 		logging('Dev size:',len(dev_data))
 		logging('Test size:',len(test_data))
@@ -469,12 +621,9 @@ if __name__ == "__main__":
 				preprocess(dev_data, is_training = False, suffix='dev',create_nan=True)
 		elif do_preprocessing and job_mode=='test':
 				preprocess(test_data, is_training = False, suffix='test', create_nan=True) # will use this as test data
-		elif do_preprocessing and job_mode == 'gen_data':
+		# elif do_preprocessing and job_mode == 'gen_data':
 				# preprocess(dev_data,is_training = False,suffix='dev',create_nan = False)
 				# preprocess(test_data,is_training = False,suffix='test',create_nan = False)
-				preprocess(modified_dev_data,is_training = False,suffix='dev',create_nan = False)
-				preprocess(modified_test_data,is_training = False,suffix='test',create_nan = False)
-				
 
 
 
@@ -489,10 +638,14 @@ if __name__ == "__main__":
 				logging('Started Testing')
 				test(test_data = test_data,model_file = save_model_file, threshold = 0.3)
 		elif job_mode == 'gen_data':
-				dev_data = json.load(open(os.path.join(out_path,'dev_data.json'),'r'))
-				test_data = json.load(open(os.path.join(out_path,'test_data.json'),'r'))
-				logging('Started predicting for evidence sentences')
-				test(test_data = dev_data, model_file=save_model_file,threshold=0.3,save_output=True,save_suffix='dev_modified_output')
-				logging('Started predicting for test sentences')
-				test(test_data = test_data, model_file=save_model_file,threshold=0.3,save_output=True,save_suffix='test_modified_output')
-				
+				gen_data(ori_data = train_data,is_training=True,filename="modified_train_data",model_file=save_model_file)
+				gen_data(ori_data = dev_data,is_training=False,filename="modified_dev_data",model_file=save_model_file)
+				gen_data(ori_data = test_data,is_training=False,filename="modified_test_data",model_file=save_model_file)
+		# model = EvidenceClassifier()
+		
+		# if torch.cuda.is_available():
+		# 		model.cuda()
+		# 		model = nn.DataParallel(model)
+		# model.load_state_dict(torch.load(save_model_file))
+		# print(evd_sent(doc = dev_data[0],label_index=0,model=model,threshold=0.3))
+						

@@ -590,3 +590,362 @@ correct_pos 1684
 recall 0.772
 prec 0.026
 F1 0.051
+Train size: 90
+Dev size: 10
+Test size: 100
+Number of instances: 37902
+Started saving
+completed saving
+
+Started Testing
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Number of instances: 37902
+Started saving
+completed saving
+
+Started Testing
+Evidence Threshold: 0.3
+gt_pos 2182
+pred_pos 63732
+correct_pos 1684
+recall 0.772
+prec 0.026
+F1 0.051
+Train size: 90
+Dev size: 10
+Test size: 100
+Number of instances: 2592
+Started saving
+completed saving
+
+Started Testing
+Evidence Threshold: 0.3
+gt_pos 2182
+pred_pos 2397
+correct_pos 1684
+recall 0.772
+prec 0.703
+F1 0.736
+Train size: 90
+Dev size: 10
+Test size: 100
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+gt_pos 1
+pred_pos 1
+correct_pos 1
+recall 1.0
+prec 1.0
+F1 1.0
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+gt_pos 1
+pred_pos 1
+correct_pos 1
+recall 1.0
+prec 1.0
+F1 1.0
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Train size: 90
+Dev size: 10
+Test size: 100
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Evidence Threshold: 0.3
+Train size: 90
+Dev size: 10
+Test size: 100
+Train size: 90
+Dev size: 10
+Test size: 100
+started savingmodified_train_data
+completed savingmodified_train_data
+Train size: 90
+Dev size: 10
+Test size: 100
+started saving modified_train_data
+completed saving modified_train_data
+started saving modified_dev_data
+completed saving modified_dev_data
+started saving modified_test_data
+completed saving modified_test_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+Train size: 90
+Dev size: 10
+Test size: 100
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+
+started saving modified_dev_data
+completed saving modified_dev_data
+
+started saving modified_test_data
+completed saving modified_test_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+
+started saving modified_dev_data
+completed saving modified_dev_data
+
+started saving modified_test_data
+completed saving modified_test_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+
+started saving modified_dev_data
+completed saving modified_dev_data
+
+started saving modified_test_data
+completed saving modified_test_data
+Train size: 27
+Dev size: 3
+Test size: 30
+
+started saving modified_train_data
+completed saving modified_train_data
+
+started saving modified_dev_data
+completed saving modified_dev_data
+
+started saving modified_test_data
+completed saving modified_test_data
